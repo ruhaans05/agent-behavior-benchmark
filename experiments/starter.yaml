@@ -1,0 +1,9 @@
+name: starter
+description: Runs negotiation, resource allocation, and auction toy environments.
+default_providers:
+  - openai_style
+  - claude_style
+default_trials: 25
+default_seed: 7
+live_providers_opt_in: true
+
