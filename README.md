@@ -38,6 +38,10 @@ agent-bench run --experiment auction --providers openai_style claude_style --tri
 
 Results are saved as JSON under `runs/`.
 
+The first reproducible simulated baseline and its interpretation are documented
+in [docs/initial_findings.md](docs/initial_findings.md). It deliberately
+distinguishes scripted-profile results from evidence about live models.
+
 ## Optional Live Providers
 
 The default benchmark uses local scripted agents. Live providers are intentionally opt-in:
@@ -71,4 +75,3 @@ tests/
 ## Safety Scope
 
 This repository is for controlled research. It does not include tools for phishing, credential theft, malware, targeted persuasion, market manipulation, or unauthorized access. Experiments are toy environments with synthetic payoffs and controlled transcripts.
-
