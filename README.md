@@ -41,6 +41,21 @@ Results are saved as JSON under `runs/`.
 The first reproducible simulated baseline and its interpretation are documented
 in [docs/initial_findings.md](docs/initial_findings.md). It deliberately
 distinguishes scripted-profile results from evidence about live models.
+Application-ready metrics and bounded resume wording live in
+[docs/application_metrics.md](docs/application_metrics.md).
+
+## Reproducible Study
+
+Run the initial 1,200-action simulated study and train/evaluate the included
+trace classifiers on a deterministic held-out split:
+
+```bash
+agent-bench study --trials-per-environment 200 --seed 20260905
+```
+
+The output is a local JSON artifact under `results/`. This study uses synthetic
+labels and scripted profiles; classifier scores measure recovery of those labels
+within this benchmark, not generalization to live model behavior.
 
 ## Optional Live Providers
 
