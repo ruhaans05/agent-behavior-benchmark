@@ -10,7 +10,7 @@ This project is a safety-scoped evaluation harness for testing that question bef
 - Checked-in four-turn negotiation transcript: [demo_dialogue.md](docs/demo_dialogue.md)
 - Plain-English experiment record: [EXPERIMENTS.md](EXPERIMENTS.md)
 - Full methods and results: [live study report](docs/live_study_results.md)
-- Five-minute technical overview: [interview brief](docs/interview_brief.md)
+- Research protocol and reproducibility gate: [research design](docs/research_design.md)
 
 ## Run it locally
 
@@ -43,7 +43,7 @@ That first run makes no external API calls. It creates a local result under `run
 - Three public pressure levels and three corresponding audit statements, for nine total conditions.
 - Live OpenAI and Anthropic adapters that record returned model IDs, usage metadata, and action provenance.
 - A checkpointed round-robin runner, duplicate-safe resume logic, and a frozen-schedule validator.
-- A transcript-free aggregate report, research paper, interview brief, and reproducible simulated baseline.
+- A transcript-free aggregate report, research paper, and reproducible simulated baseline.
 
 ## Live API Benchmark
 

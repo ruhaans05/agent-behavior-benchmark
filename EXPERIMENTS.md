@@ -103,4 +103,3 @@ The value of the project is that the claim, reward, rule, provenance, and limita
 - [Live study report](docs/live_study_results.md)
 - [Machine-readable aggregate](docs/data/live_full_20260907_partial_analysis.json)
 - [Research design](docs/research_design.md)
-- [Interview brief](docs/interview_brief.md)
