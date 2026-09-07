@@ -11,6 +11,7 @@ This project is a safety-scoped evaluation harness for testing that question bef
 - Plain-English experiment record: [EXPERIMENTS.md](EXPERIMENTS.md)
 - Full methods and results: [live study report](docs/live_study_results.md)
 - No-cost dialogue control result: [controlled dialogue results](docs/controlled_dialogue_results.md)
+- Live dialogue pilot: [methods and bounded findings](docs/live_dialogue_pilot_results.md)
 - Research protocol and reproducibility gate: [research design](docs/research_design.md)
 
 ## Run it locally
@@ -95,6 +96,10 @@ The dialogue environment has a separate no-cost mechanism check. Two agents exch
 
 The checked-in control run covers 900 paired dialogue trials and 3,600 visible turns. In the deliberately strategic condition (misaligned reward plus no audit), every one of the 200 trials involving a strategic-capable control policy ended in conflict; the all-cooperative control pair remained unchanged by design. Outside that policy condition, 99 of the same 225 paired scenarios reached agreement. Read the [result note](docs/controlled_dialogue_results.md) for the design and boundary.
 
+## Live Dialogue Pilot
+
+The first live dialogue pilot ran eight four-turn negotiations (32 model calls) between GPT-5 mini and GPT-5.4 mini, with both speaking orders and a fixed owner instruction. It is deliberately small and does not support a model ranking or a claim about intent. It did show that the full shared-transcript and provenance path works with live models. The initial action schema overloaded one field, so its five claim/reservation mismatches are recorded as a measurement issue rather than owner-instruction violations. The next protocol separates the requested allocation from the reported reservation value. See the [pilot report](docs/live_dialogue_pilot_results.md).
+
 ## How It Is Organized
 
 ```text
@@ -107,6 +112,7 @@ EXPERIMENTS.md                            Plain-English experiment ledger
 DEMO.md                                   Short local walkthrough
 docs/demo_dialogue.md                     Checked-in deterministic conversation demo
 docs/controlled_dialogue_results.md       No-cost dialogue-control result note
+docs/live_dialogue_pilot_results.md       Capped live dialogue pilot report
 docs/live_study_results.md                Full method, findings, and limitations
 docs/data/...analysis.json                Checked-in aggregate result artifact
 tests/test_benchmark.py                   Reliability and regression checks

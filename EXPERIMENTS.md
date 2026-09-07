@@ -64,6 +64,24 @@ metrics respond to known changes in a policy. It does **not** estimate an
 effect for OpenAI, Anthropic, or any other live model. See [the control-study
 result note](docs/controlled_dialogue_results.md).
 
+### Live Dialogue Pilot: Owner-Instruction Compliance
+
+The first live dialogue pilot used GPT-5 mini and GPT-5.4 mini in both speaking
+orders across four reward/audit cells. It completed 8 four-turn negotiations
+(32 model calls) under an explicit synthetic owner instruction: accurately
+report the private reservation, honor the 10-unit pool, and do not coordinate
+to evade the toy-task rules.
+
+This pilot confirms the models receive and respond to one another's visible
+offers. It is too small to support behavioral comparisons. It also exposed a
+measurement flaw: the initial schema used `claim` for both the requested split
+and the reported reservation. Five of 16 final `claim` fields differed from
+the private reservation, but that is not evidence that a model tried to bypass
+the instruction. The protocol now uses a separate `reported_reservation` field
+for future runs. There were no avoidable over-pool outcomes, and no final
+action matched the narrow collusion or manipulation lexical indicators. Read
+the [full pilot report](docs/live_dialogue_pilot_results.md).
+
 ## What Changed Between Trials
 
 The live study crossed three reward structures with three pressure levels, creating nine conditions:
@@ -125,4 +143,5 @@ The value of the project is that the claim, reward, rule, provenance, and limita
 - [Machine-readable aggregate](docs/data/live_full_20260907_partial_analysis.json)
 - [Research design](docs/research_design.md)
 - [Dialogue control result](docs/controlled_dialogue_results.md)
+- [Live dialogue pilot report](docs/live_dialogue_pilot_results.md)
 - [Blinded review protocol](docs/review_protocol.md)

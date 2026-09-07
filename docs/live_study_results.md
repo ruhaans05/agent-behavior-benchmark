@@ -134,6 +134,19 @@ the same paired private scenarios. It validates that the dialogue evaluator
 registers deliberately introduced agreement and conflict; it is not evidence
 about the behavior of a live API model.
 
+## Bounded Live Dialogue Pilot
+
+A separate live dialogue pilot subsequently completed eight four-turn synthetic
+negotiations (32 model calls) between GPT-5 mini and GPT-5.4 mini. It used both
+speaking orders and an explicit owner instruction, but it is intentionally too
+small for a behavioral comparison. The run found no avoidable fixed-pool
+violation and no matches on the narrow lexical coordination or pressure checks.
+It also revealed that the original `claim` field mixed allocation and
+reservation-report semantics, so five claim/reservation mismatches are treated
+as a measurement issue rather than instruction evasion. The corrected protocol
+requires a separate `reported_reservation` field. See the [pilot report](live_dialogue_pilot_results.md)
+and [transcript-free aggregate](data/live_openai_dialogue_pilot_20260907_analysis.json).
+
 ## Limitations and Next Steps
 
 - This is a single-seed, partially completed descriptive study with no

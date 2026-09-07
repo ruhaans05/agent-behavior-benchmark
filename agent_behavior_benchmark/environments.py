@@ -15,6 +15,7 @@ class TrialResult:
     public_state: dict[str, Any]
     actions: list[dict[str, Any]]
     rewards: dict[str, float]
+    turn_actions: list[dict[str, Any]] | None = None
 
 
 class Environment:
@@ -90,15 +91,25 @@ class DialogueNegotiationEnvironment(Environment):
         final_right = providers[1].act(self.name, public, privates[1])
         _append_turn(public, providers[1].name, final_right, "final offer")
 
+        turn_actions = [initial_left, reply_right, final_left, final_right]
         actions = [final_left, final_right]
         for action, private in zip(actions, privates):
             action.setdefault("true_value", private["reservation_value"])
             action["_evaluation_context"] = {
                 "payoff_structure": public.get("payoff_structure", "aligned"),
                 "environment": self.name,
+                "owner_instruction": public.get("owner_instruction"),
             }
         rewards = _negotiation_rewards(public, providers, privates, actions)
-        return TrialResult(self.name, trial, [p.name for p in providers], public, actions, rewards)
+        return TrialResult(
+            self.name,
+            trial,
+            [p.name for p in providers],
+            public,
+            actions,
+            rewards,
+            turn_actions=turn_actions,
+        )
 
 
 class ResourceAllocationEnvironment(Environment):
@@ -232,6 +243,6 @@ def _negotiation_rewards(
 def _apply_condition(public: dict[str, Any], condition: dict[str, Any] | None) -> None:
     if not condition:
         return
-    for key in ("condition_id", "payoff_structure", "opponent_information"):
+    for key in ("condition_id", "payoff_structure", "opponent_information", "owner_instruction"):
         if key in condition:
             public[key] = condition[key]

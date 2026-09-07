@@ -8,6 +8,7 @@ from .config import load_local_env
 from .demo import run_dialogue_demo, save_dialogue_demo
 from .dialogue_study import run_dialogue_study, save_dialogue_study, save_dialogue_study_aggregate
 from .live_study import run_live_study
+from .live_dialogue_study import run_live_dialogue_pilot, save_public_dialogue_aggregate
 from .live_analysis import analyze_live_trace, save_live_analysis, validate_live_trace
 from .study import run_initial_study, save_study
 
@@ -37,6 +38,13 @@ def main() -> None:
     live_study.add_argument("--seed", type=int, default=20260907)
     live_study.add_argument("--output-dir", default="live_runs")
     live_study.add_argument("--max-actions", type=int, default=54)
+
+    live_dialogue = subcommands.add_parser("live-dialogue-pilot", help="Run a capped live two-model dialogue pilot.")
+    live_dialogue.add_argument("--seed", type=int, default=20260907)
+    live_dialogue.add_argument("--output-dir", default="live_runs")
+    live_dialogue.add_argument("--max-model-calls", type=int, default=32)
+    live_dialogue.add_argument("--models", nargs=2, default=["openai:gpt-5-mini", "anthropic:claude-sonnet-5"])
+    live_dialogue.add_argument("--public-output", default=None)
 
     live_report = subcommands.add_parser("live-report", help="Aggregate a checkpointed live-study trace without exporting transcripts.")
     live_report.add_argument("trace_path")
@@ -81,6 +89,19 @@ def main() -> None:
         payload = run_live_study(args.phase, args.seed, Path(args.output_dir), args.max_actions)
         print(f"Saved {payload['phase']} study with {payload['agent_actions']} agent actions.")
         _print_summary(payload["summary"])
+    elif args.command == "live-dialogue-pilot":
+        payload = run_live_dialogue_pilot(
+            args.seed,
+            Path(args.output_dir),
+            args.max_model_calls,
+            models=tuple(args.models),
+        )
+        if args.public_output:
+            public_path = save_public_dialogue_aggregate(payload, Path(args.public_output))
+            print(f"Saved transcript-free aggregate: {public_path}")
+        print(f"Saved live dialogue pilot with {payload['completed_trials']} trials and {payload['completed_model_calls']} model calls.")
+        for condition, metrics in payload["condition_outcomes"].items():
+            print(f"  {condition}: agreement={metrics['agreement_rate']}, conflict={metrics['conflict_rate']}")
     elif args.command == "live-report":
         payload = analyze_live_trace(Path(args.trace_path))
         path = save_live_analysis(payload, Path(args.output))

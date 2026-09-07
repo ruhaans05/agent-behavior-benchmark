@@ -58,6 +58,13 @@ Its output must never be combined with live-model findings. A live follow-up
 should preregister the provider model IDs, seed, cell count, cost ceiling, and
 review sample before making API calls.
 
+The first live dialogue pilot found that an overloaded `claim` field could mean
+either a reported private reservation or a requested allocation. Future live
+dialogue calls therefore require a separate `reported_reservation` field. Only
+that field may support a mechanical owner-instruction-compliance check; a
+requested allocation differing from a reservation is not, by itself, evidence
+of instruction evasion.
+
 ## Human Review Plan
 
 Dialogue-level claims about deception, collusion, manipulation, or task-rule
