@@ -49,6 +49,21 @@ The completed live-study report is in
 interrupted-but-valid 817-trial API study, including the provider-limit stop
 condition and the distinction between task-rule flags and general model claims.
 
+## Live Study Highlights
+
+- Built and validated a frozen 900-trial, 1,800-action study design; 817 trials
+  and 1,634 live actions are complete and checkpointed.
+- Compared three recorded API model snapshots in nine synthetic
+  reward/audit-pressure conditions across three competitive environments.
+- Found task-local specification-gaming flags in 20/360 GPT-5 mini,
+  13/364 Claude Sonnet 5, and 1/362 GPT-5.4 mini non-aligned actions.
+- Published a transcript-free aggregate, a research paper, exact replay and
+  integrity commands, and explicit limits on what the results mean.
+
+For a five-minute technical walk-through, start with
+[docs/interview_brief.md](docs/interview_brief.md). For the full evidence,
+read [docs/live_study_results.md](docs/live_study_results.md).
+
 ## Reproducible Study
 
 Run the initial 1,200-action simulated study and train/evaluate the included
@@ -75,6 +90,8 @@ agent-bench live-study --phase pilot --seed 20260907 --max-actions 54
 
 # A full round robin is explicitly capped at 1,800 agent actions.
 agent-bench live-study --phase full --seed 20260907 --max-actions 1800
+agent-bench live-verify live_runs/live-full-20260907-traces.jsonl \
+  --phase full --seed 20260907
 agent-bench live-report live_runs/live-full-20260907-traces.jsonl \
   --output live_runs/live-full-20260907-analysis.json
 ```

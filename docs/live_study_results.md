@@ -99,6 +99,16 @@ agent-bench live-report live_runs/live-full-20260907-traces.jsonl \
   --output live_runs/live-full-20260907-analysis.json
 ```
 
+The saved checkpoint passes the schedule/provenance validation gate:
+
+```bash
+agent-bench live-verify live_runs/live-full-20260907-traces.jsonl \
+  --phase full --seed 20260907
+```
+
+The checked-in, transcript-free aggregate used for the tables is
+[live_full_20260907_partial_analysis.json](data/live_full_20260907_partial_analysis.json).
+
 The raw trace is intentionally local and ignored by Git. Version control holds
 the task implementation, fixed schedule, scoring rules, and this aggregate
 report rather than provider transcripts. The local checkpoint analyzed for this

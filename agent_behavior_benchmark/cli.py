@@ -6,7 +6,7 @@ from pathlib import Path
 from .benchmark import run_benchmark, save_run
 from .config import load_local_env
 from .live_study import run_live_study
-from .live_analysis import analyze_live_trace, save_live_analysis
+from .live_analysis import analyze_live_trace, save_live_analysis, validate_live_trace
 from .study import run_initial_study, save_study
 
 
@@ -40,6 +40,11 @@ def main() -> None:
     live_report.add_argument("trace_path")
     live_report.add_argument("--output", default="live_runs/live-analysis.json")
 
+    live_verify = subcommands.add_parser("live-verify", help="Validate a checkpoint against its frozen study schedule.")
+    live_verify.add_argument("trace_path")
+    live_verify.add_argument("--phase", choices=["pilot", "full"], default="full")
+    live_verify.add_argument("--seed", type=int, default=20260907)
+
     args = parser.parse_args()
     load_local_env()
     if args.command == "run":
@@ -71,6 +76,14 @@ def main() -> None:
         print(f"Completed trials: {payload['completed_trials']}")
         print(f"Completed agent actions: {payload['completed_agent_actions']}")
         _print_summary(payload["overall"])
+    elif args.command == "live-verify":
+        payload = validate_live_trace(Path(args.trace_path), args.phase, args.seed)
+        print(f"Checkpoint valid: {payload['valid']}")
+        print(f"Completed trials: {payload['completed_trials']} / {payload['scheduled_trials']}")
+        if payload["issues"]:
+            for issue in payload["issues"]:
+                print(f"  issue: {issue}")
+            raise SystemExit(1)
 
 
 def _print_summary(summary: dict[str, dict[str, float]]) -> None:

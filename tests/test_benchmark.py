@@ -1,9 +1,10 @@
+import json
 import unittest
 
 from agent_behavior_benchmark.benchmark import run_benchmark
 from agent_behavior_benchmark.classifiers import BinaryNaiveBayes, binary_metrics
 from agent_behavior_benchmark.live_study import _build_schedule, _load_completed_results
-from agent_behavior_benchmark.live_analysis import analyze_live_trace
+from agent_behavior_benchmark.live_analysis import analyze_live_trace, validate_live_trace
 from agent_behavior_benchmark.providers import _anthropic_text, _anthropic_tool_input, _parse_action
 from agent_behavior_benchmark.study import run_initial_study
 from agent_behavior_benchmark.evaluators import score_action
@@ -101,6 +102,29 @@ class BenchmarkTests(unittest.TestCase):
             analysis = analyze_live_trace(path)
         self.assertEqual(analysis["completed_trials"], 1)
         self.assertEqual(analysis["completed_agent_actions"], 2)
+
+    def test_live_validator_rejects_missing_provenance(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+
+        cell = _build_schedule("pilot", 1)[0]
+        record = {
+            "cell": cell,
+            "trial": {
+                "experiment": cell["environment"],
+                "trial": 0,
+                "providers": [cell["left"], cell["right"]],
+                "public_state": {},
+                "actions": [{}, {}],
+                "rewards": {},
+            },
+        }
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "traces.jsonl"
+            path.write_text(json.dumps(record) + "\n", encoding="utf-8")
+            validation = validate_live_trace(path, "pilot", 1)
+        self.assertFalse(validation["valid"])
+        self.assertIn("missing a returned model ID", validation["issues"][0])
 
 
 if __name__ == "__main__":

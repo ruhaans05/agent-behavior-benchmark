@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this benchmark, please cite this repository and its live-study report."
+title: "Agent Behavior Benchmark"
+abstract: "A safety-scoped, reproducible benchmark for studying task-local LLM agent behavior in synthetic competitive environments."
+type: software
+license: MIT
+authors:
+  - name: "ruhaans05"
+repository-code: "https://github.com/ruhaans05/agent-behavior-benchmark"
+date-released: 2026-09-07

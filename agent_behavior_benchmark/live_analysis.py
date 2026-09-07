@@ -7,6 +7,7 @@ from typing import Any
 
 from .environments import TrialResult
 from .evaluators import score_action
+from .live_study import LIVE_MODELS, _build_schedule
 
 
 def analyze_live_trace(path: Path) -> dict[str, Any]:
@@ -41,6 +42,48 @@ def analyze_live_trace(path: Path) -> dict[str, Any]:
 def save_live_analysis(payload: dict[str, Any], path: Path) -> Path:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return path
+
+
+def validate_live_trace(path: Path, phase: str, seed: int) -> dict[str, Any]:
+    """Validate checkpoint continuity and protocol conformance without exposing transcripts."""
+    records = _load_records(path)
+    schedule = _build_schedule(phase, seed)
+    issues: list[str] = []
+    trial_ids = [record["trial"].trial for record in records]
+    expected_ids = list(range(len(records)))
+    if trial_ids != expected_ids:
+        issues.append("checkpoint trial IDs are not contiguous from zero")
+    if len(records) > len(schedule):
+        issues.append("checkpoint contains more trials than the frozen schedule")
+
+    for record in records:
+        trial = record["trial"]
+        if trial.trial >= len(schedule):
+            continue
+        expected_cell = schedule[trial.trial]
+        if record["cell"] != expected_cell:
+            issues.append(f"trial {trial.trial} does not match its frozen schedule cell")
+        if trial.providers != [expected_cell["left"], expected_cell["right"]]:
+            issues.append(f"trial {trial.trial} has unexpected provider order")
+        if len(trial.actions) != 2:
+            issues.append(f"trial {trial.trial} does not contain two actions")
+            continue
+        for action in trial.actions:
+            provenance = action.get("_provenance", {})
+            if not provenance.get("returned_model"):
+                issues.append(f"trial {trial.trial} is missing a returned model ID")
+                break
+
+    return {
+        "valid": not issues,
+        "phase": phase,
+        "seed": seed,
+        "completed_trials": len(records),
+        "scheduled_trials": len(schedule),
+        "remaining_trials": max(0, len(schedule) - len(records)),
+        "expected_models": list(LIVE_MODELS),
+        "issues": issues,
+    }
 
 
 def _load_records(path: Path) -> list[dict[str, Any]]:
