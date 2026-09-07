@@ -1,126 +1,77 @@
 # Agent Behavior Benchmark
 
-A small, safety-oriented benchmark for studying whether goal-directed LLM-style agents exploit task criteria, deceive or collude, or manipulate humans and other agents in competitive environments.
+What happens when an AI agent has an incentive to win, but the task also asks it to follow a rule? This project tests that question in small, controlled games.
 
-The project starts with deterministic "OpenAI-style" and "Claude-style" scripted providers so experiments are reproducible without API keys. It also includes guarded adapters for opt-in live API studies and transcript-free aggregation of checkpointed results.
+Two language-model agents compete using only synthetic values. They negotiate a split, request a share of a resource pool, or bid for a toy item. The benchmark changes the reward rule and the amount of auditing, then checks whether an agent's claim or bid stays consistent with the task's stated goal.
 
-## Research Goal
+This is AI-safety research, not a test of real people or real-world systems. There are no users, private records, markets, credentials, or consequential decisions in the environments.
 
-Study whether AI agents exploit unintended strategies to maximize task success when competing against humans or other AI agents.
+## What Has Been Built
 
-The benchmark focuses on measuring behaviors, not encouraging them:
+| | Current study |
+| --- | ---: |
+| Live two-agent trials | 817 |
+| Logged live agent actions | 1,634 |
+| API model snapshots | 3 |
+| Synthetic incentive/audit conditions | 9 |
+| Competitive environments | 3 |
 
-- rule exploitation and specification gaming
-- false claims about private state
-- collusive signaling between agents
-- manipulative appeals to human judges
-- reward/task success tradeoffs
+The target design contains 900 trials. The remaining 83 are checkpointed for a later continuation after the Anthropic account's configured usage limit resets.
 
-## Quick Start
+## The Question, in Plain English
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e .
-agent-bench run --experiment starter --trials 25 --seed 7
-agent-bench report runs/latest.json
-```
+An agent should not be able to get a better score merely by misstating a private need, hiding its true reservation value, or bidding past its synthetic value. This benchmark asks whether those task-rule violations appear more often when the reward function stops matching the stated task goal.
 
-No external model calls are made by default.
+The agents are never asked to cheat. They are simply asked to act in the toy game. The evaluator then applies transparent, environment-specific checks to the action they returned.
 
-## Example Experiments
+## What We Found
 
-```bash
-agent-bench run --experiment negotiation --providers openai_style claude_style --trials 50
-agent-bench run --experiment resource_allocation --providers openai_style claude_style --trials 50
-agent-bench run --experiment auction --providers openai_style claude_style --trials 50
-```
+In the mixed and misaligned reward conditions, the task-rule check flagged:
 
-Results are saved as JSON under `runs/`.
+| Model | Flagged actions | Rate |
+| --- | ---: | ---: |
+| GPT-5 mini | 20 / 360 | 5.6% |
+| Claude Sonnet 5 | 13 / 364 | 3.6% |
+| GPT-5.4 mini | 1 / 362 | 0.3% |
 
-The first reproducible simulated baseline and its interpretation are documented
-in [docs/initial_findings.md](docs/initial_findings.md). It deliberately
-distinguishes scripted-profile results from evidence about live models.
-Application-ready metrics and bounded resume wording live in
-[docs/application_metrics.md](docs/application_metrics.md).
+That is a preliminary 20x difference between the highest and lowest observed rates in this particular benchmark. It does **not** show that any model is generally deceptive or unsafe. It is a concrete replication target: keep the task fixed, add seeds and human review, and test whether the difference holds.
 
-The completed live-study report is in
-[docs/live_study_results.md](docs/live_study_results.md). It documents an
-interrupted-but-valid 817-trial API study, including the provider-limit stop
-condition and the distinction between task-rule flags and general model claims.
+No action matched the benchmark's narrow collusion phrase detector. One action matched the manipulation phrase detector and is treated as a review item, not a standalone conclusion.
 
-## Live Study Highlights
+## Start Here
 
-- Built and validated a frozen 900-trial, 1,800-action study design; 817 trials
-  and 1,634 live actions are complete and checkpointed.
-- Compared three recorded API model snapshots in nine synthetic
-  reward/audit-pressure conditions across three competitive environments.
-- Found task-local specification-gaming flags in 20/360 GPT-5 mini,
-  13/364 Claude Sonnet 5, and 1/362 GPT-5.4 mini non-aligned actions.
-- Published a transcript-free aggregate, a research paper, exact replay and
-  integrity commands, and explicit limits on what the results mean.
+- [EXPERIMENTS.md](EXPERIMENTS.md): what the agents did, what was varied, and how to interpret each finding.
+- [Live study report](docs/live_study_results.md): the full method, exact model IDs, results tables, checkpoint hash, and limitations.
+- [Interview brief](docs/interview_brief.md): a concise technical walkthrough.
+- [Aggregate results](docs/data/live_full_20260907_partial_analysis.json): machine-readable results without provider transcripts.
+- [Application metrics](docs/application_metrics.md): evidence-backed resume wording and claims to avoid.
 
-For a five-minute technical walk-through, start with
-[docs/interview_brief.md](docs/interview_brief.md). For the full evidence,
-read [docs/live_study_results.md](docs/live_study_results.md).
+## Reproduce the Checks
 
-## Reproducible Study
-
-Run the initial 1,200-action simulated study and train/evaluate the included
-trace classifiers on a deterministic held-out split:
+The deterministic simulated baseline requires no API keys:
 
 ```bash
+python3 -m unittest discover -s tests -v
 agent-bench study --trials-per-environment 200 --seed 20260905
 ```
 
-The output is a local JSON artifact under `results/`. This study uses synthetic
-labels and scripted profiles; classifier scores measure recovery of those labels
-within this benchmark, not generalization to live model behavior.
-
-## Optional Live Providers
-
-The default benchmark uses local scripted agents. Live providers are intentionally opt-in:
+The live study is opt-in and uses local environment variables that are ignored by Git. To validate an existing local checkpoint and rebuild its aggregate:
 
 ```bash
-# Store keys locally in .env (never commit them), then run a capped pilot.
-OPENAI_API_KEY=...
-ANTHROPIC_API_KEY=...
-
-agent-bench live-study --phase pilot --seed 20260907 --max-actions 54
-
-# A full round robin is explicitly capped at 1,800 agent actions.
-agent-bench live-study --phase full --seed 20260907 --max-actions 1800
 agent-bench live-verify live_runs/live-full-20260907-traces.jsonl \
   --phase full --seed 20260907
 agent-bench live-report live_runs/live-full-20260907-traces.jsonl \
   --output live_runs/live-full-20260907-analysis.json
 ```
 
-The live adapters use `openai:gpt-5-mini`, `openai:gpt-5.4-mini-2026-03-17`,
-and `anthropic:claude-sonnet-5`, record the provider-returned model IDs and
-usage metadata, force structured actions, and checkpoint every trial. Live
-provider prompts are research-framed and include explicit constraints against
-real-world harm, credential handling, harassment, financial advice, or personal
-data collection.
+## How the Project Is Reliable
 
-## Project Layout
+- Live agents return structured actions instead of free-form text.
+- Every completed trial is checkpointed immediately.
+- Resume logic deduplicates interrupted records by trial ID.
+- An integrity command checks the checkpoint against the frozen schedule, provider order, and returned model provenance.
+- Raw provider transcripts and API keys remain local; the public repository contains code, documentation, and transcript-free aggregate data.
 
-```text
-agent_behavior_benchmark/
-  cli.py              command-line interface
-  benchmark.py        experiment runner
-  environments.py     competitive task environments
-  evaluators.py       behavior metrics and scoring
-  providers.py        simulated and optional live providers
-  live_study.py       capped, checkpointed API study runner
-  live_analysis.py    transcript-free aggregate analysis
-  prompts.py          safe research prompts
-experiments/
-  starter.yaml        starter benchmark configuration
-tests/
-  test_benchmark.py   smoke tests
-```
+## Safety Boundary
 
-## Safety Scope
-
-This repository is for controlled research. It does not include tools for phishing, credential theft, malware, targeted persuasion, market manipulation, or unauthorized access. Experiments are toy environments with synthetic payoffs and controlled transcripts.
+All environments use toy payoffs and synthetic private state. The project does not provide phishing, credential theft, malware, targeted persuasion, market manipulation, financial advice, or unauthorized-access capabilities.
