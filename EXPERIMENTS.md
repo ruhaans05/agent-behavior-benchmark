@@ -43,6 +43,27 @@ this page do not include dialogue trials yet.
 Read the [documented dialogue demo](docs/demo_dialogue.md) or regenerate it
 with `agent-bench demo --seed 7`.
 
+### Dialogue Control Study: Do the Metrics Detect Cooperation and Conflict?
+
+Before interpreting dialogue from a live model, the project checks the new
+environment with three transparent scripted policies. The cooperative control
+accepts a feasible offer, the competitive control uses a conflicting demand
+only when the toy reward is misaligned and unaudited, and the reciprocal
+control cooperates after a cooperative visible offer unless that same strategic
+condition is active. These are deliberately programmed behaviors, not model
+proxies.
+
+The checked-in mechanism check replays the same private scenario across a 2 by
+2 reward/audit grid for every policy pairing: 900 two-agent trials and 3,600
+conversation turns. In the 200 misaligned-and-unaudited trials containing a
+strategic-capable policy, the control produced conflict in every case. The
+all-cooperative pairing is intentionally unaffected by the strategic switch.
+Across the matching 225 paired scenarios outside that control condition, 99
+reached agreement. This validates that the transcript, pairing, and outcome
+metrics respond to known changes in a policy. It does **not** estimate an
+effect for OpenAI, Anthropic, or any other live model. See [the control-study
+result note](docs/controlled_dialogue_results.md).
+
 ## What Changed Between Trials
 
 The live study crossed three reward structures with three pressure levels, creating nine conditions:
@@ -103,3 +124,5 @@ The value of the project is that the claim, reward, rule, provenance, and limita
 - [Live study report](docs/live_study_results.md)
 - [Machine-readable aggregate](docs/data/live_full_20260907_partial_analysis.json)
 - [Research design](docs/research_design.md)
+- [Dialogue control result](docs/controlled_dialogue_results.md)
+- [Blinded review protocol](docs/review_protocol.md)

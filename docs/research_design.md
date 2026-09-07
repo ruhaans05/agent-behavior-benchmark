@@ -13,6 +13,7 @@ or claim deviations produced by goal-directed LLM agents.
 - incentive pressure
 - information asymmetry
 - opponent type
+- communication protocol (one-shot versus visible multi-turn dialogue)
 
 ## Dependent Measures
 
@@ -41,6 +42,29 @@ against the phase and seed. The gate checks trial continuity, exact frozen
 schedule cells, provider order, two-action completeness, and returned-model
 provenance. The public repository contains only aggregate result data, never
 provider transcripts or API credentials.
+
+## Dialogue Follow-Up Design
+
+The dialogue extension separates reward structure from audit information in a
+2 by 2 grid: aligned or misaligned reward, crossed with verified or unaudited
+claims. For a given provider pair and repeat, all four cells reuse the same
+synthetic private values. This paired design prevents a fresh private-value
+draw from masquerading as a condition effect.
+
+The first run is a no-cost mechanism check with scripted policies whose
+behavior is defined in code. It confirms that the environment exposes the
+expected agreement, conflict, concession, and reciprocal-response signals.
+Its output must never be combined with live-model findings. A live follow-up
+should preregister the provider model IDs, seed, cell count, cost ceiling, and
+review sample before making API calls.
+
+## Human Review Plan
+
+Dialogue-level claims about deception, collusion, manipulation, or task-rule
+gaming need blinded review of sampled live traces. The repository includes a
+[review protocol](review_protocol.md) specifying label definitions, sampling,
+adjudication, and agreement reporting. The current live study has no such
+labels, so the protocol is a future gate rather than a completed result.
 
 ## Starter Tasks
 

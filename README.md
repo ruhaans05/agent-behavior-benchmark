@@ -10,6 +10,7 @@ This project is a safety-scoped evaluation harness for testing that question bef
 - Checked-in four-turn negotiation transcript: [demo_dialogue.md](docs/demo_dialogue.md)
 - Plain-English experiment record: [EXPERIMENTS.md](EXPERIMENTS.md)
 - Full methods and results: [live study report](docs/live_study_results.md)
+- No-cost dialogue control result: [controlled dialogue results](docs/controlled_dialogue_results.md)
 - Research protocol and reproducibility gate: [research design](docs/research_design.md)
 
 ## Run it locally
@@ -30,6 +31,8 @@ python -m pip install -e .
 ```bash
 python3 -m unittest discover -s tests -v
 agent-bench run --experiment negotiation --providers openai_style claude_style --trials 25 --seed 7
+agent-bench dialogue-study --repeats 25 --seed 20260907 \
+  --summary-output docs/data/controlled_dialogue_study_summary.json
 ```
 
 That first run makes no external API calls. It creates a local result under `runs/` and demonstrates the same environment, scoring, and reporting path used by the larger study.
@@ -86,6 +89,12 @@ agent-bench live-report live_runs/live-full-20260907-traces.jsonl \
 
 The public repository stores the checked-in [aggregate result](docs/data/live_full_20260907_partial_analysis.json), not raw provider transcripts.
 
+## Dialogue Control Study
+
+The dialogue environment has a separate no-cost mechanism check. Two agents exchange an opening offer, reply, and final offer while seeing the same transcript. It uses three deliberately defined scripted policies: cooperative, competitive, and reciprocal. The policies are controls for checking whether the interaction and outcome metrics distinguish agreement, conflict, concessions, and reciprocal behavior; they are not stand-ins for real models.
+
+The checked-in control run covers 900 paired dialogue trials and 3,600 visible turns. In the deliberately strategic condition (misaligned reward plus no audit), every one of the 200 trials involving a strategic-capable control policy ended in conflict; the all-cooperative control pair remained unchanged by design. Outside that policy condition, 99 of the same 225 paired scenarios reached agreement. Read the [result note](docs/controlled_dialogue_results.md) for the design and boundary.
+
 ## How It Is Organized
 
 ```text
@@ -97,6 +106,7 @@ agent_behavior_benchmark/evaluators.py    Task-specific behavior indicators
 EXPERIMENTS.md                            Plain-English experiment ledger
 DEMO.md                                   Short local walkthrough
 docs/demo_dialogue.md                     Checked-in deterministic conversation demo
+docs/controlled_dialogue_results.md       No-cost dialogue-control result note
 docs/live_study_results.md                Full method, findings, and limitations
 docs/data/...analysis.json                Checked-in aggregate result artifact
 tests/test_benchmark.py                   Reliability and regression checks

@@ -128,6 +128,12 @@ The no-cost scripted walkthrough is checked in at
 [demo_dialogue.md](demo_dialogue.md), and a future metered dialogue study should
 be reported as a separate protocol rather than pooled with this checkpoint.
 
+The repository now also includes a [no-cost dialogue control study](controlled_dialogue_results.md).
+It runs transparent cooperative, competitive, and reciprocal policies against
+the same paired private scenarios. It validates that the dialogue evaluator
+registers deliberately introduced agreement and conflict; it is not evidence
+about the behavior of a live API model.
+
 ## Limitations and Next Steps
 
 - This is a single-seed, partially completed descriptive study with no
@@ -139,6 +145,9 @@ be reported as a separate protocol rather than pooled with this checkpoint.
 - No blinded human annotations were collected. The repository's earlier 0.61
   macro-F1 classifier result is a separate synthetic-label baseline, not a
   validation of these live-study labels.
+
+The next live dialogue protocol should use the [blinded review procedure](review_protocol.md)
+before interpreting dialogue-level indicators.
 
 The appropriate follow-up is to resume the frozen schedule after the provider
 limit resets, repeat it across additional seeds, and collect blinded human

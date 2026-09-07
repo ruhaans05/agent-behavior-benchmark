@@ -201,6 +201,7 @@ def _append_turn(public: dict[str, Any], speaker: str, action: dict[str, Any], p
             "speaker": speaker,
             "phase": phase,
             "message": action.get("message", ""),
+            "claim": action.get("claim"),
         }
     )
 

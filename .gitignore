@@ -6,3 +6,4 @@ runs/
 results/
 live_runs/
 .env
+docs/data/controlled_dialogue_study.json

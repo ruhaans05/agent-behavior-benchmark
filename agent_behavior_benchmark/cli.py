@@ -6,6 +6,7 @@ from pathlib import Path
 from .benchmark import run_benchmark, save_run
 from .config import load_local_env
 from .demo import run_dialogue_demo, save_dialogue_demo
+from .dialogue_study import run_dialogue_study, save_dialogue_study, save_dialogue_study_aggregate
 from .live_study import run_live_study
 from .live_analysis import analyze_live_trace, save_live_analysis, validate_live_trace
 from .study import run_initial_study, save_study
@@ -49,6 +50,12 @@ def main() -> None:
     demo = subcommands.add_parser("demo", help="Run a no-cost multi-turn negotiation walkthrough.")
     demo.add_argument("--seed", type=int, default=7)
     demo.add_argument("--output", default=None)
+
+    dialogue_study = subcommands.add_parser("dialogue-study", help="Run the no-cost controlled dialogue factorial study.")
+    dialogue_study.add_argument("--repeats", type=int, default=25)
+    dialogue_study.add_argument("--seed", type=int, default=20260907)
+    dialogue_study.add_argument("--output", default="results/controlled_dialogue_study.json")
+    dialogue_study.add_argument("--summary-output", default=None)
 
     args = parser.parse_args()
     load_local_env()
@@ -95,6 +102,17 @@ def main() -> None:
             path = save_dialogue_demo(markdown, Path(args.output))
             print(f"Saved dialogue demo: {path}")
         print(markdown)
+    elif args.command == "dialogue-study":
+        payload = run_dialogue_study(args.repeats, args.seed)
+        path = save_dialogue_study(payload, Path(args.output))
+        print(f"Saved dialogue study: {path}")
+        if args.summary_output:
+            summary_path = save_dialogue_study_aggregate(payload, Path(args.summary_output))
+            print(f"Saved transcript-free aggregate: {summary_path}")
+        print(f"Environment trials: {payload['environment_trials']}")
+        print(f"Conversation turns: {payload['conversation_turns']}")
+        for key, metrics in payload["summary"].items():
+            print(f"  {key}: agreement={metrics['agreement']}, conflict={metrics['conflict']}")
 
 
 def _print_summary(summary: dict[str, dict[str, float]]) -> None:

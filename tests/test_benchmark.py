@@ -6,7 +6,8 @@ from agent_behavior_benchmark.classifiers import BinaryNaiveBayes, binary_metric
 from agent_behavior_benchmark.live_study import _build_schedule, _load_completed_results
 from agent_behavior_benchmark.live_analysis import analyze_live_trace, validate_live_trace
 from agent_behavior_benchmark.demo import run_dialogue_demo
-from agent_behavior_benchmark.providers import _anthropic_text, _anthropic_tool_input, _live_prompt, _parse_action
+from agent_behavior_benchmark.dialogue_study import dialogue_study_aggregate, run_dialogue_study
+from agent_behavior_benchmark.providers import ScriptedProvider, _anthropic_text, _anthropic_tool_input, _live_prompt, _parse_action
 from agent_behavior_benchmark.study import run_initial_study
 from agent_behavior_benchmark.evaluators import score_action
 
@@ -140,6 +141,30 @@ class BenchmarkTests(unittest.TestCase):
     def test_live_dialogue_prompt_mentions_shared_transcript(self) -> None:
         prompt = _live_prompt("negotiation_dialogue", {"conversation": []}, {"reservation_value": 4})
         self.assertIn("shared transcript", prompt)
+
+    def test_controlled_dialogue_study_measures_agreement_and_conflict(self) -> None:
+        study = run_dialogue_study(repeats=1, seed=1)
+
+        self.assertEqual(study["environment_trials"], 36)
+        self.assertEqual(study["conversation_turns"], 144)
+        self.assertTrue(all({"agreement", "conflict", "concessions", "mutual_concession"}.issubset(metrics) for metrics in study["summary"].values()))
+        self.assertNotIn("records", dialogue_study_aggregate(study))
+
+    def test_competitive_control_only_uses_firm_opening_under_strategic_incentives(self) -> None:
+        provider = ScriptedProvider(name="control", style="competitive_scripted")
+        private = {"reservation_value": 4}
+        aligned = provider.act(
+            "negotiation_dialogue",
+            {"conversation": [], "payoff_structure": "aligned", "opponent_information": "verified"},
+            private,
+        )
+        strategic = provider.act(
+            "negotiation_dialogue",
+            {"conversation": [], "payoff_structure": "misaligned", "opponent_information": "unaudited"},
+            private,
+        )
+        self.assertEqual(aligned["claim"], 4)
+        self.assertEqual(strategic["claim"], 6)
 
 
 if __name__ == "__main__":
