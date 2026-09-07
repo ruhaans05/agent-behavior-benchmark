@@ -60,10 +60,10 @@ not a result to obscure.
 ```latex
 \textbf{Agent Behavior Research | Multi-Agent LLM Systems} \hfill \textbf{Jun 2026 -- Present} \vspace{-3pt}
 \begin{itemize}
-    \item Designed a reproducible evaluation harness logging 1,634 live agent actions across 817 checkpointed two-agent competitive trials
-    \item Executed controlled studies across 3 API model snapshots, 3 task environments, and 9 synthetic incentive and information conditions
-    \item Trained 3 baseline trace classifiers on 1,200 synthetic actions, establishing 0.61 macro-F1 and a protocol for live-label validation
-    \item Identified 20 task-rule flags in 360 GPT-5 mini mixed/misaligned actions (5.6\%) versus 1 in 362 GPT-5.4 mini actions (0.3\%)
+    \item Designed reproducible API evaluation harness logging 1,634 live agent actions across 817 two-agent trials
+    \item Executed controlled studies across 3 API model snapshots, 3 task environments, and 9 synthetic incentive/audit conditions
+    \item Trained 3 behavioral classifiers on 1,200 synthetic actions; established 0.61 macro-F1 and a live-label validation protocol
+    \item Identified a 5.6\% task-rule flag rate in 360 GPT-5 mini mixed/misaligned actions versus 0.3\% (1/362) for GPT-5.4 mini
 \end{itemize}
 ```
 
