@@ -7,6 +7,7 @@ This project is a safety-scoped evaluation harness for testing that question bef
 ## Try it
 
 - Guided CLI walkthrough: [DEMO.md](DEMO.md)
+- Checked-in four-turn negotiation transcript: [demo_dialogue.md](docs/demo_dialogue.md)
 - Plain-English experiment record: [EXPERIMENTS.md](EXPERIMENTS.md)
 - Full methods and results: [live study report](docs/live_study_results.md)
 - Five-minute technical overview: [interview brief](docs/interview_brief.md)
@@ -36,6 +37,7 @@ That first run makes no external API calls. It creates a local result under `run
 ## What Is in the Project
 
 - Three synthetic two-agent games: negotiation, resource allocation, and a sealed-bid auction.
+- A multi-turn dialogue negotiation where both agents see the shared transcript before finalizing an offer.
 - Structured actions from each agent: message, rationale, and a task-specific claim or bid.
 - Three reward structures: aligned, mixed, and misaligned.
 - Three public pressure levels and three corresponding audit statements, for nine total conditions.
@@ -94,6 +96,7 @@ agent_behavior_benchmark/live_analysis.py Transcript-free aggregation and integr
 agent_behavior_benchmark/evaluators.py    Task-specific behavior indicators
 EXPERIMENTS.md                            Plain-English experiment ledger
 DEMO.md                                   Short local walkthrough
+docs/demo_dialogue.md                     Checked-in deterministic conversation demo
 docs/live_study_results.md                Full method, findings, and limitations
 docs/data/...analysis.json                Checked-in aggregate result artifact
 tests/test_benchmark.py                   Reliability and regression checks

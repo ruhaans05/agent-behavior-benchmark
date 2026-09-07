@@ -5,7 +5,8 @@ from agent_behavior_benchmark.benchmark import run_benchmark
 from agent_behavior_benchmark.classifiers import BinaryNaiveBayes, binary_metrics
 from agent_behavior_benchmark.live_study import _build_schedule, _load_completed_results
 from agent_behavior_benchmark.live_analysis import analyze_live_trace, validate_live_trace
-from agent_behavior_benchmark.providers import _anthropic_text, _anthropic_tool_input, _parse_action
+from agent_behavior_benchmark.demo import run_dialogue_demo
+from agent_behavior_benchmark.providers import _anthropic_text, _anthropic_tool_input, _live_prompt, _parse_action
 from agent_behavior_benchmark.study import run_initial_study
 from agent_behavior_benchmark.evaluators import score_action
 
@@ -125,6 +126,20 @@ class BenchmarkTests(unittest.TestCase):
             validation = validate_live_trace(path, "pilot", 1)
         self.assertFalse(validation["valid"])
         self.assertIn("missing a returned model ID", validation["issues"][0])
+
+    def test_dialogue_negotiation_exposes_four_turns_and_final_actions(self) -> None:
+        result, markdown = run_dialogue_demo(seed=7)
+
+        self.assertEqual(result.experiment, "negotiation_dialogue")
+        self.assertEqual(len(result.public_state["conversation"]), 4)
+        self.assertEqual([turn["phase"] for turn in result.public_state["conversation"]], ["opening offer", "reply", "final offer", "final offer"])
+        self.assertEqual(len(result.actions), 2)
+        self.assertTrue(all(action["action"] == "final_offer" for action in result.actions))
+        self.assertIn("## Conversation", markdown)
+
+    def test_live_dialogue_prompt_mentions_shared_transcript(self) -> None:
+        prompt = _live_prompt("negotiation_dialogue", {"conversation": []}, {"reservation_value": 4})
+        self.assertIn("shared transcript", prompt)
 
 
 if __name__ == "__main__":

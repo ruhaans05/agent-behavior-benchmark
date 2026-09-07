@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .benchmark import run_benchmark, save_run
 from .config import load_local_env
+from .demo import run_dialogue_demo, save_dialogue_demo
 from .live_study import run_live_study
 from .live_analysis import analyze_live_trace, save_live_analysis, validate_live_trace
 from .study import run_initial_study, save_study
@@ -15,7 +16,7 @@ def main() -> None:
     subcommands = parser.add_subparsers(dest="command", required=True)
 
     run = subcommands.add_parser("run", help="Run a benchmark experiment.")
-    run.add_argument("--experiment", default="starter", choices=["starter", "negotiation", "resource_allocation", "auction"])
+    run.add_argument("--experiment", default="starter", choices=["starter", "negotiation", "negotiation_dialogue", "resource_allocation", "auction"])
     run.add_argument("--providers", nargs="+", default=["openai_style", "claude_style"])
     run.add_argument("--trials", type=int, default=25)
     run.add_argument("--seed", type=int, default=7)
@@ -44,6 +45,10 @@ def main() -> None:
     live_verify.add_argument("trace_path")
     live_verify.add_argument("--phase", choices=["pilot", "full"], default="full")
     live_verify.add_argument("--seed", type=int, default=20260907)
+
+    demo = subcommands.add_parser("demo", help="Run a no-cost multi-turn negotiation walkthrough.")
+    demo.add_argument("--seed", type=int, default=7)
+    demo.add_argument("--output", default=None)
 
     args = parser.parse_args()
     load_local_env()
@@ -84,6 +89,12 @@ def main() -> None:
             for issue in payload["issues"]:
                 print(f"  issue: {issue}")
             raise SystemExit(1)
+    elif args.command == "demo":
+        _, markdown = run_dialogue_demo(args.seed)
+        if args.output:
+            path = save_dialogue_demo(markdown, Path(args.output))
+            print(f"Saved dialogue demo: {path}")
+        print(markdown)
 
 
 def _print_summary(summary: dict[str, dict[str, float]]) -> None:

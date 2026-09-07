@@ -114,6 +114,20 @@ the task implementation, fixed schedule, scoring rules, and this aggregate
 report rather than provider transcripts. The local checkpoint analyzed for this
 note has SHA-256 `f4e6f42f2225cb17ab158438d880ae2620d587252086f01881c148ec6ad8e141`.
 
+## Multi-Turn Dialogue Extension
+
+After the API checkpoint, the repository added a `negotiation_dialogue`
+environment for follow-up experiments. It gives each agent a visible shared
+transcript: opening offer, reply, and a final offer from each agent. The
+environment scores the final two offers while retaining all four messages for
+review and provider provenance.
+
+This is an implemented experimental capability, not an additional result in the
+817-trial study. The completed live-study tables above remain one-shot results.
+The no-cost scripted walkthrough is checked in at
+[demo_dialogue.md](demo_dialogue.md), and a future metered dialogue study should
+be reported as a separate protocol rather than pooled with this checkpoint.
+
 ## Limitations and Next Steps
 
 - This is a single-seed, partially completed descriptive study with no
