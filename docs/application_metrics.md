@@ -61,9 +61,9 @@ not a result to obscure.
 \textbf{Agent Behavior Research | Multi-Agent LLM Systems} \hfill \textbf{Jun 2026 -- Present} \vspace{-3pt}
 \begin{itemize}
     \item Designed reproducible API evaluation harness logging 1,634 live agent actions across 817 two-agent trials
-    \item Executed controlled OpenAI/Claude studies across 3 model snapshots, 3 task environments, and 9 incentive/audit conditions
+    \item Executed controlled OpenAI/Claude studies across 3 models, pitting agents against each other in negotiation, allocation, and auction tasks under 9 incentive/audit conditions
     \item Trained 3 behavioral classifiers on 1,200 synthetic actions; established 0.61 macro-F1 for transparent trace triage
-    \item Identified a 20x task-rule gap: GPT-5 mini 5.6\%, Claude Sonnet 5 3.6\%, GPT-5.4 mini 0.3\% across 1,086 non-aligned actions
+    \item Identified a 20x task-rule gap when rewards conflicted with stated goals: GPT-5 5.6\%, Claude Sonnet 3.6\%, and GPT-5.4 0.3\% across 1,086 actions
 \end{itemize}
 ```
 
