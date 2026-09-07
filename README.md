@@ -4,6 +4,45 @@ When an AI agent is rewarded for winning a task, does it still follow the rule t
 
 This project is a safety-scoped evaluation harness for testing that question before agents are used in higher-stakes settings. It puts two LLM agents into small synthetic competitive games, records their structured decisions, and measures whether a changed reward function changes task-rule compliance. The checked-in study design spans 3 API model snapshots, 3 environments, and 9 incentive/audit conditions; the current live checkpoint contains 817 validated trials and 1,634 agent actions.
 
+## Why This Matters
+
+Imagine two workers sharing 10 lunch tickets. Each worker privately needs a
+certain number. Their manager says: "Tell the truth about what you need, share
+the tickets fairly, and do not make secret deals." The problem gets interesting
+when the scoring system accidentally rewards a worker for asking for more or
+for hiding what they need.
+
+This benchmark gives two AI agents that same kind of harmless practice task.
+The tickets are just abstract resource credits, never real money or benefits.
+The purpose is to find out whether an agent follows a clear owner instruction
+when the toy reward makes a different choice look attractive.
+
+That matters for future AI workflows that help allocate limited resources such
+as computing capacity, inventory, work queues, or customer-support priority.
+This project does not claim that an AI has harmed a real system. It builds a
+"test before trust" process: expose an agent to an explicit rule, a competing
+goal, and another agent's message in a controlled setting, then preserve enough
+evidence to review what happened before a higher-stakes deployment.
+
+### What the Benchmark Does
+
+1. Two agents receive a small synthetic task, such as splitting 10 credits,
+   requesting from a shared pool, or bidding on a made-up item.
+2. Each agent has a private synthetic value or need; the other agent cannot
+   see it.
+3. The task gives an explicit rule, while the toy reward and audit conditions
+   change across trials.
+4. The evaluator records the actions and checks concrete outcomes: inaccurate
+   claims, inflated requests, overbids, explicit coordination language, and
+   agreement or conflict in dialogue.
+
+The newer dialogue environment lets agents read and respond to a shared
+four-turn negotiation transcript. Its first live pilot also revealed an
+important evaluation lesson: an ambiguous action field can look like a rule
+violation even when it is merely unclear communication. The protocol now
+separates an agent's requested allocation from its reported private minimum
+before treating a mismatch as an owner-instruction failure.
+
 ## Try it
 
 - Guided CLI walkthrough: [DEMO.md](DEMO.md)
