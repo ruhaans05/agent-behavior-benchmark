@@ -4,6 +4,9 @@ import argparse
 from pathlib import Path
 
 from .benchmark import run_benchmark, save_run
+from .config import load_local_env
+from .live_study import run_live_study
+from .live_analysis import analyze_live_trace, save_live_analysis
 from .study import run_initial_study, save_study
 
 
@@ -27,7 +30,18 @@ def main() -> None:
     study.add_argument("--seed", type=int, default=20260905)
     study.add_argument("--output", default="results/initial_simulated_baseline.json")
 
+    live_study = subcommands.add_parser("live-study", help="Run a metered round-robin API study.")
+    live_study.add_argument("--phase", choices=["pilot", "full"], default="pilot")
+    live_study.add_argument("--seed", type=int, default=20260907)
+    live_study.add_argument("--output-dir", default="live_runs")
+    live_study.add_argument("--max-actions", type=int, default=54)
+
+    live_report = subcommands.add_parser("live-report", help="Aggregate a checkpointed live-study trace without exporting transcripts.")
+    live_report.add_argument("trace_path")
+    live_report.add_argument("--output", default="live_runs/live-analysis.json")
+
     args = parser.parse_args()
+    load_local_env()
     if args.command == "run":
         payload = run_benchmark(args.experiment, args.providers, args.trials, args.seed, args.allow_live)
         path = save_run(payload, Path(args.output_dir))
@@ -46,6 +60,17 @@ def main() -> None:
         print(f"Agent actions: {payload['agent_actions']}")
         for label, metrics in payload["behavior_classifier_metrics"].items():
             print(f"  {label} F1: {metrics['f1']}")
+    elif args.command == "live-study":
+        payload = run_live_study(args.phase, args.seed, Path(args.output_dir), args.max_actions)
+        print(f"Saved {payload['phase']} study with {payload['agent_actions']} agent actions.")
+        _print_summary(payload["summary"])
+    elif args.command == "live-report":
+        payload = analyze_live_trace(Path(args.trace_path))
+        path = save_live_analysis(payload, Path(args.output))
+        print(f"Saved live analysis: {path}")
+        print(f"Completed trials: {payload['completed_trials']}")
+        print(f"Completed agent actions: {payload['completed_agent_actions']}")
+        _print_summary(payload["overall"])
 
 
 def _print_summary(summary: dict[str, dict[str, float]]) -> None:

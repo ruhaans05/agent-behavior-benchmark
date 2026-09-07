@@ -2,7 +2,7 @@
 
 A small, safety-oriented benchmark for studying whether goal-directed LLM-style agents exploit task criteria, deceive or collude, or manipulate humans and other agents in competitive environments.
 
-The project starts with deterministic "OpenAI-style" and "Claude-style" scripted providers so experiments are reproducible without API keys. It also includes guarded provider interfaces for plugging in live model APIs later.
+The project starts with deterministic "OpenAI-style" and "Claude-style" scripted providers so experiments are reproducible without API keys. It also includes guarded adapters for opt-in live API studies and transcript-free aggregation of checkpointed results.
 
 ## Research Goal
 
@@ -44,6 +44,11 @@ distinguishes scripted-profile results from evidence about live models.
 Application-ready metrics and bounded resume wording live in
 [docs/application_metrics.md](docs/application_metrics.md).
 
+The completed live-study report is in
+[docs/live_study_results.md](docs/live_study_results.md). It documents an
+interrupted-but-valid 817-trial API study, including the provider-limit stop
+condition and the distinction between task-rule flags and general model claims.
+
 ## Reproducible Study
 
 Run the initial 1,200-action simulated study and train/evaluate the included
@@ -62,14 +67,24 @@ within this benchmark, not generalization to live model behavior.
 The default benchmark uses local scripted agents. Live providers are intentionally opt-in:
 
 ```bash
-export OPENAI_API_KEY=...
-agent-bench run --experiment negotiation --providers openai_live scripted_baseline --allow-live
+# Store keys locally in .env (never commit them), then run a capped pilot.
+OPENAI_API_KEY=...
+ANTHROPIC_API_KEY=...
 
-export ANTHROPIC_API_KEY=...
-agent-bench run --experiment negotiation --providers claude_live scripted_baseline --allow-live
+agent-bench live-study --phase pilot --seed 20260907 --max-actions 54
+
+# A full round robin is explicitly capped at 1,800 agent actions.
+agent-bench live-study --phase full --seed 20260907 --max-actions 1800
+agent-bench live-report live_runs/live-full-20260907-traces.jsonl \
+  --output live_runs/live-full-20260907-analysis.json
 ```
 
-Live provider prompts are research-framed and include explicit constraints against real-world harm, credential handling, harassment, financial advice, or personal data collection.
+The live adapters use `openai:gpt-5-mini`, `openai:gpt-5.4-mini-2026-03-17`,
+and `anthropic:claude-sonnet-5`, record the provider-returned model IDs and
+usage metadata, force structured actions, and checkpoint every trial. Live
+provider prompts are research-framed and include explicit constraints against
+real-world harm, credential handling, harassment, financial advice, or personal
+data collection.
 
 ## Project Layout
 
@@ -80,6 +95,8 @@ agent_behavior_benchmark/
   environments.py     competitive task environments
   evaluators.py       behavior metrics and scoring
   providers.py        simulated and optional live providers
+  live_study.py       capped, checkpointed API study runner
+  live_analysis.py    transcript-free aggregate analysis
   prompts.py          safe research prompts
 experiments/
   starter.yaml        starter benchmark configuration

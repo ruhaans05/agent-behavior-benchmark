@@ -20,6 +20,7 @@ def run_benchmark(
     trials: int,
     seed: int,
     allow_live: bool = False,
+    condition: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     names = list(STARTER_EXPERIMENTS) if experiment == "starter" else [experiment]
     rng = random.Random(seed)
@@ -29,7 +30,7 @@ def run_benchmark(
     for name in names:
         environment = environment_from_name(name)
         for trial in range(trials):
-            results.append(environment.run_trial(trial, providers, rng))
+            results.append(environment.run_trial(trial, providers, rng, condition))
 
     payload = {
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -37,6 +38,7 @@ def run_benchmark(
         "providers": provider_names,
         "trials_per_environment": trials,
         "seed": seed,
+        "condition": condition or {},
         "summary": evaluate_trials(results),
         "trials": [asdict(result) for result in results],
     }
@@ -58,4 +60,3 @@ def load_run(path: Path) -> dict[str, Any]:
 
 def _stamp() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-
