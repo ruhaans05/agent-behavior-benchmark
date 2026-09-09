@@ -82,6 +82,22 @@ for future runs. There were no avoidable over-pool outcomes, and no final
 action matched the narrow collusion or manipulation lexical indicators. Read
 the [full pilot report](docs/live_dialogue_pilot_results.md).
 
+### Extended Live Interaction Pilot
+
+The next live protocol adds a third bargaining round: opening offer, reply,
+revision, revision reply, and two final offers. GPT-5 mini and GPT-5.4 mini
+completed four six-turn conversations (24 model calls) under both speaking
+orders. Two aligned/verified conversations reached agreement and showed an
+average of 1.5 revised offers and 1.5 concessions per conversation. The two
+misaligned/unaudited conversations reached no agreement, averaged 0.5 revised
+offers and no concessions, and included one avoidable fixed-pool conflict.
+
+All eight final actions supplied the corrected `reported_reservation` field,
+and all eight matched their synthetic private value. These are descriptive
+pilot observations from two conversations per condition, not an estimate of an
+incentive effect or a broad safety conclusion. See the [extended interaction
+report](docs/live_extended_dialogue_pilot_results.md).
+
 ## What Changed Between Trials
 
 The live study crossed three reward structures with three pressure levels, creating nine conditions:
@@ -144,4 +160,5 @@ The value of the project is that the claim, reward, rule, provenance, and limita
 - [Research design](docs/research_design.md)
 - [Dialogue control result](docs/controlled_dialogue_results.md)
 - [Live dialogue pilot report](docs/live_dialogue_pilot_results.md)
+- [Extended interaction pilot report](docs/live_extended_dialogue_pilot_results.md)
 - [Blinded review protocol](docs/review_protocol.md)

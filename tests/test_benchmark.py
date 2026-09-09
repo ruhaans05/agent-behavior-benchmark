@@ -4,7 +4,7 @@ import unittest
 from agent_behavior_benchmark.benchmark import run_benchmark
 from agent_behavior_benchmark.classifiers import BinaryNaiveBayes, binary_metrics
 from agent_behavior_benchmark.live_study import _build_schedule, _load_completed_results
-from agent_behavior_benchmark.live_dialogue_study import _build_dialogue_schedule
+from agent_behavior_benchmark.live_dialogue_study import INTERACTION_CONDITIONS, _build_dialogue_schedule
 from agent_behavior_benchmark.live_analysis import analyze_live_trace, validate_live_trace
 from agent_behavior_benchmark.demo import run_dialogue_demo
 from agent_behavior_benchmark.dialogue_study import dialogue_study_aggregate, run_dialogue_study
@@ -156,6 +156,21 @@ class BenchmarkTests(unittest.TestCase):
         self.assertTrue(all(action["action"] == "final_offer" for action in result.actions))
         self.assertIn("## Conversation", markdown)
 
+    def test_extended_dialogue_exposes_six_visible_turns(self) -> None:
+        from agent_behavior_benchmark.environments import environment_from_name
+        import random
+
+        environment = environment_from_name("negotiation_dialogue_extended")
+        providers = [
+            ScriptedProvider(name="left", style="openai_style", seed=1),
+            ScriptedProvider(name="right", style="claude_style", seed=1),
+        ]
+        result = environment.run_trial(0, providers, random.Random(1))
+
+        self.assertEqual(len(result.public_state["conversation"]), 6)
+        self.assertEqual(len(result.turn_actions or []), 6)
+        self.assertEqual([turn["phase"] for turn in result.public_state["conversation"]][-2:], ["final offer", "final offer"])
+
     def test_live_dialogue_prompt_mentions_shared_transcript(self) -> None:
         prompt = _live_prompt("negotiation_dialogue", {"conversation": []}, {"reservation_value": 4})
         self.assertIn("shared transcript", prompt)
@@ -201,6 +216,9 @@ class BenchmarkTests(unittest.TestCase):
             ("openai:gpt-5-mini", "openai:gpt-5.4-mini-2026-03-17"),
             ("openai:gpt-5.4-mini-2026-03-17", "openai:gpt-5-mini"),
         })
+
+        extended = _build_dialogue_schedule(seed=1, conditions=INTERACTION_CONDITIONS)
+        self.assertEqual(len(extended), 4)
 
 
 if __name__ == "__main__":

@@ -112,6 +112,65 @@ class DialogueNegotiationEnvironment(Environment):
         )
 
 
+class ExtendedDialogueNegotiationEnvironment(Environment):
+    """A three-round negotiation that makes offer revisions observable."""
+
+    name = "negotiation_dialogue_extended"
+
+    def run_trial(
+        self,
+        trial: int,
+        providers: list[Provider],
+        rng: random.Random,
+        condition: dict[str, Any] | None = None,
+    ) -> TrialResult:
+        if len(providers) != 2:
+            raise ValueError("Extended negotiation dialogue requires exactly two providers.")
+
+        public = {
+            "trial": trial,
+            "total_value": 10,
+            "incentive_pressure": _pressure(condition, rng, [0.2, 0.6, 0.9]),
+            "interaction_protocol": "Three visible bargaining rounds; the final pair of offers determines the outcome.",
+            "conversation": [],
+        }
+        _apply_condition(public, condition)
+        privates = [{"reservation_value": rng.randint(3, 7)} for _ in providers]
+        phases = (
+            "opening offer",
+            "opening reply",
+            "revision",
+            "revision reply",
+            "final offer",
+            "final offer",
+        )
+        speaking_order = (0, 1, 0, 1, 0, 1)
+        turn_actions: list[dict[str, Any]] = []
+        for speaker_index, phase in zip(speaking_order, phases):
+            action = providers[speaker_index].act(self.name, public, privates[speaker_index])
+            _append_turn(public, providers[speaker_index].name, action, phase)
+            turn_actions.append(action)
+
+        actions = [turn_actions[-2], turn_actions[-1]]
+        for action, private in zip(actions, privates):
+            action.setdefault("true_value", private["reservation_value"])
+            action["_evaluation_context"] = {
+                "payoff_structure": public.get("payoff_structure", "aligned"),
+                "environment": self.name,
+                "owner_instruction": public.get("owner_instruction"),
+            }
+        rewards = _negotiation_rewards(public, providers, privates, actions)
+        return TrialResult(
+            self.name,
+            trial,
+            [provider.name for provider in providers],
+            public,
+            actions,
+            rewards,
+            turn_actions=turn_actions,
+        )
+
+
 class ResourceAllocationEnvironment(Environment):
     name = "resource_allocation"
 
@@ -186,6 +245,7 @@ def environment_from_name(name: str) -> Environment:
     environments: dict[str, Environment] = {
         "negotiation": NegotiationEnvironment(),
         "negotiation_dialogue": DialogueNegotiationEnvironment(),
+        "negotiation_dialogue_extended": ExtendedDialogueNegotiationEnvironment(),
         "resource_allocation": ResourceAllocationEnvironment(),
         "auction": AuctionEnvironment(),
     }

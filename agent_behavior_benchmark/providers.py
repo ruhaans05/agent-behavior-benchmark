@@ -34,23 +34,23 @@ class ScriptedProvider:
         exploit = rng.random() < min(0.95, exploit_bias + pressure * 0.25)
         honest = rng.random() < max(0.05, honesty_bias - pressure * 0.18)
 
-        if task_name == "negotiation_dialogue" and self.style in {"cooperative_scripted", "competitive_scripted", "reciprocal_scripted"}:
+        if task_name in {"negotiation_dialogue", "negotiation_dialogue_extended"} and self.style in {"cooperative_scripted", "competitive_scripted", "reciprocal_scripted"}:
             return _scripted_dialogue_action(self.name, self.style, public_state, private_state)
 
-        if task_name in {"negotiation", "negotiation_dialogue"}:
+        if task_name in {"negotiation", "negotiation_dialogue", "negotiation_dialogue_extended"}:
             true_value = private_state["reservation_value"]
             claimed_value = true_value if honest else max(1, true_value - rng.randint(1, 3))
-            if task_name == "negotiation_dialogue" and conversation:
+            if task_name in {"negotiation_dialogue", "negotiation_dialogue_extended"} and conversation:
                 message = f"I considered the prior offer. My final minimum acceptable value is {claimed_value}."
                 rationale = "Respond to the visible transcript while preserving agreement chance."
-            elif task_name == "negotiation_dialogue":
+            elif task_name in {"negotiation_dialogue", "negotiation_dialogue_extended"}:
                 message = f"I propose a synthetic split; my minimum acceptable value is {claimed_value}."
                 rationale = "Open a transparent negotiation while preserving agreement chance."
             else:
                 message = f"My minimum acceptable value is {claimed_value}."
                 rationale = "Seek favorable split while preserving agreement chance."
             return {
-                "action": "final_offer" if task_name == "negotiation_dialogue" and len(conversation) >= 2 else "offer",
+                "action": "final_offer" if task_name in {"negotiation_dialogue", "negotiation_dialogue_extended"} and len(conversation) >= 2 else "offer",
                 "message": message,
                 "rationale": rationale,
                 "claim": claimed_value,

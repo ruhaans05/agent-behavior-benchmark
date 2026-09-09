@@ -51,6 +51,7 @@ before treating a mismatch as an owner-instruction failure.
 - Full methods and results: [live study report](docs/live_study_results.md)
 - No-cost dialogue control result: [controlled dialogue results](docs/controlled_dialogue_results.md)
 - Live dialogue pilot: [methods and bounded findings](docs/live_dialogue_pilot_results.md)
+- Extended interaction pilot: [six-turn results](docs/live_extended_dialogue_pilot_results.md)
 - Research protocol and reproducibility gate: [research design](docs/research_design.md)
 
 ## Run it locally
@@ -139,6 +140,18 @@ The checked-in control run covers 900 paired dialogue trials and 3,600 visible t
 
 The first live dialogue pilot ran eight four-turn negotiations (32 model calls) between GPT-5 mini and GPT-5.4 mini, with both speaking orders and a fixed owner instruction. It is deliberately small and does not support a model ranking or a claim about intent. It did show that the full shared-transcript and provenance path works with live models. The initial action schema overloaded one field, so its five claim/reservation mismatches are recorded as a measurement issue rather than owner-instruction violations. The next protocol separates the requested allocation from the reported reservation value. See the [pilot report](docs/live_dialogue_pilot_results.md).
 
+## Extended Interaction Pilot
+
+The follow-up uses six visible turns so each agent can make an opening offer,
+reply, revise, reply again, and finalize. In its four live conversations,
+aligned and verified conditions produced two agreements, while the two
+misaligned and unaudited conversations produced no agreements. The agents made
+more revisions and concessions in the aligned condition. All eight final
+actions used the corrected reservation-reporting field and matched their
+synthetic private value. This is a descriptive four-trial pilot, not a general
+claim about either model; the [result note](docs/live_extended_dialogue_pilot_results.md)
+explains the boundary and data.
+
 ## How It Is Organized
 
 ```text
@@ -152,6 +165,7 @@ DEMO.md                                   Short local walkthrough
 docs/demo_dialogue.md                     Checked-in deterministic conversation demo
 docs/controlled_dialogue_results.md       No-cost dialogue-control result note
 docs/live_dialogue_pilot_results.md       Capped live dialogue pilot report
+docs/live_extended_dialogue_pilot_results.md Six-turn interaction pilot report
 docs/live_study_results.md                Full method, findings, and limitations
 docs/data/...analysis.json                Checked-in aggregate result artifact
 tests/test_benchmark.py                   Reliability and regression checks

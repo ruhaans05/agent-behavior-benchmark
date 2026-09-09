@@ -8,7 +8,7 @@ from .config import load_local_env
 from .demo import run_dialogue_demo, save_dialogue_demo
 from .dialogue_study import run_dialogue_study, save_dialogue_study, save_dialogue_study_aggregate
 from .live_study import run_live_study
-from .live_dialogue_study import run_live_dialogue_pilot, save_public_dialogue_aggregate
+from .live_dialogue_study import run_live_dialogue_pilot, run_live_extended_dialogue_pilot, save_public_dialogue_aggregate
 from .live_analysis import analyze_live_trace, save_live_analysis, validate_live_trace
 from .study import run_initial_study, save_study
 
@@ -18,7 +18,7 @@ def main() -> None:
     subcommands = parser.add_subparsers(dest="command", required=True)
 
     run = subcommands.add_parser("run", help="Run a benchmark experiment.")
-    run.add_argument("--experiment", default="starter", choices=["starter", "negotiation", "negotiation_dialogue", "resource_allocation", "auction"])
+    run.add_argument("--experiment", default="starter", choices=["starter", "negotiation", "negotiation_dialogue", "negotiation_dialogue_extended", "resource_allocation", "auction"])
     run.add_argument("--providers", nargs="+", default=["openai_style", "claude_style"])
     run.add_argument("--trials", type=int, default=25)
     run.add_argument("--seed", type=int, default=7)
@@ -45,6 +45,13 @@ def main() -> None:
     live_dialogue.add_argument("--max-model-calls", type=int, default=32)
     live_dialogue.add_argument("--models", nargs=2, default=["openai:gpt-5-mini", "anthropic:claude-sonnet-5"])
     live_dialogue.add_argument("--public-output", default=None)
+
+    live_interaction = subcommands.add_parser("live-interaction-pilot", help="Run a capped six-turn live interaction pilot.")
+    live_interaction.add_argument("--seed", type=int, default=20260908)
+    live_interaction.add_argument("--output-dir", default="live_runs")
+    live_interaction.add_argument("--max-model-calls", type=int, default=24)
+    live_interaction.add_argument("--models", nargs=2, default=["openai:gpt-5-mini", "openai:gpt-5.4-mini-2026-03-17"])
+    live_interaction.add_argument("--public-output", default=None)
 
     live_report = subcommands.add_parser("live-report", help="Aggregate a checkpointed live-study trace without exporting transcripts.")
     live_report.add_argument("trace_path")
@@ -102,6 +109,19 @@ def main() -> None:
         print(f"Saved live dialogue pilot with {payload['completed_trials']} trials and {payload['completed_model_calls']} model calls.")
         for condition, metrics in payload["condition_outcomes"].items():
             print(f"  {condition}: agreement={metrics['agreement_rate']}, conflict={metrics['conflict_rate']}")
+    elif args.command == "live-interaction-pilot":
+        payload = run_live_extended_dialogue_pilot(
+            args.seed,
+            Path(args.output_dir),
+            args.max_model_calls,
+            models=tuple(args.models),
+        )
+        if args.public_output:
+            public_path = save_public_dialogue_aggregate(payload, Path(args.public_output))
+            print(f"Saved transcript-free aggregate: {public_path}")
+        print(f"Saved live interaction pilot with {payload['completed_trials']} trials and {payload['completed_model_calls']} model calls.")
+        for condition, metrics in payload["condition_outcomes"].items():
+            print(f"  {condition}: agreement={metrics['agreement_rate']}, revisions={metrics['mean_revised_offers']}")
     elif args.command == "live-report":
         payload = analyze_live_trace(Path(args.trace_path))
         path = save_live_analysis(payload, Path(args.output))

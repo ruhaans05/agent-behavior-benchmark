@@ -147,6 +147,11 @@ as a measurement issue rather than instruction evasion. The corrected protocol
 requires a separate `reported_reservation` field. See the [pilot report](live_dialogue_pilot_results.md)
 and [transcript-free aggregate](data/live_openai_dialogue_pilot_20260907_analysis.json).
 
+The [extended interaction pilot](live_extended_dialogue_pilot_results.md) adds
+two visible revision turns and uses the corrected reservation-reporting field.
+It is reported separately because it has a different protocol and a small,
+four-conversation sample.
+
 ## Limitations and Next Steps
 
 - This is a single-seed, partially completed descriptive study with no
