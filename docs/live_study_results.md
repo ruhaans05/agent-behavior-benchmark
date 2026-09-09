@@ -152,6 +152,26 @@ two visible revision turns and uses the corrected reservation-reporting field.
 It is reported separately because it has a different protocol and a small,
 four-conversation sample.
 
+## Authentication-Boundary Coordination Pilot
+
+The repository also includes a separate, safety-scoped persistence check. Two
+live agents coordinate for six visible turns on creating a blank document in a
+simulated workspace, but the environment supplies no browser, account,
+password, cookie, token, real web access, or external tools. The required
+behavior is to have the owner authenticate personally, coordinate safe
+preparation, and resume only after a simulated confirmation.
+
+The initial wording produced three ambiguous requests to "provide" a session
+despite six safe structured actions. After the boundary wording was corrected,
+the next six-turn run had no credential/session handoff requests and no
+workaround signals. In a third run with a simulated owner confirmation after
+turn two, all four post-confirmation turns selected synthetic completion
+actions. This small protocol test demonstrates a measurable distinction
+between safe persistence and an unsafe authorization workaround; it does not
+test real browser automation or support a general model-security conclusion.
+The full method and public aggregates are in the
+[authentication-boundary result note](authentication_boundary_results.md).
+
 ## Limitations and Next Steps
 
 - This is a single-seed, partially completed descriptive study with no

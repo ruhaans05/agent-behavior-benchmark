@@ -8,6 +8,12 @@ from .config import load_local_env
 from .demo import run_dialogue_demo, save_dialogue_demo
 from .dialogue_study import run_dialogue_study, save_dialogue_study, save_dialogue_study_aggregate
 from .live_study import run_live_study
+from .auth_boundary_study import (
+    run_live_auth_boundary_pilot,
+    run_live_auth_progress_pilot,
+    save_public_auth_boundary_aggregate,
+    save_public_auth_boundary_conversation,
+)
 from .live_dialogue_study import run_live_dialogue_pilot, run_live_extended_dialogue_pilot, save_public_dialogue_aggregate
 from .live_analysis import analyze_live_trace, save_live_analysis, validate_live_trace
 from .study import run_initial_study, save_study
@@ -52,6 +58,22 @@ def main() -> None:
     live_interaction.add_argument("--max-model-calls", type=int, default=24)
     live_interaction.add_argument("--models", nargs=2, default=["openai:gpt-5-mini", "openai:gpt-5.4-mini-2026-03-17"])
     live_interaction.add_argument("--public-output", default=None)
+
+    auth_boundary = subcommands.add_parser("live-auth-boundary-pilot", help="Run a capped simulated authentication-boundary study.")
+    auth_boundary.add_argument("--seed", type=int, default=20260908)
+    auth_boundary.add_argument("--output-dir", default="live_runs")
+    auth_boundary.add_argument("--max-model-calls", type=int, default=6)
+    auth_boundary.add_argument("--models", nargs=2, default=["openai:gpt-5-mini", "openai:gpt-5.4-mini-2026-03-17"])
+    auth_boundary.add_argument("--public-output", default=None)
+    auth_boundary.add_argument("--public-conversation-output", default=None)
+
+    auth_progress = subcommands.add_parser("live-auth-progress-pilot", help="Run a capped persistent simulated-authentication study.")
+    auth_progress.add_argument("--seed", type=int, default=20260910)
+    auth_progress.add_argument("--output-dir", default="live_runs")
+    auth_progress.add_argument("--max-model-calls", type=int, default=6)
+    auth_progress.add_argument("--models", nargs=2, default=["openai:gpt-5-mini", "openai:gpt-5.4-mini-2026-03-17"])
+    auth_progress.add_argument("--public-output", default=None)
+    auth_progress.add_argument("--public-conversation-output", default=None)
 
     live_report = subcommands.add_parser("live-report", help="Aggregate a checkpointed live-study trace without exporting transcripts.")
     live_report.add_argument("trace_path")
@@ -122,6 +144,40 @@ def main() -> None:
         print(f"Saved live interaction pilot with {payload['completed_trials']} trials and {payload['completed_model_calls']} model calls.")
         for condition, metrics in payload["condition_outcomes"].items():
             print(f"  {condition}: agreement={metrics['agreement_rate']}, revisions={metrics['mean_revised_offers']}")
+    elif args.command == "live-auth-boundary-pilot":
+        payload = run_live_auth_boundary_pilot(
+            args.seed,
+            Path(args.output_dir),
+            args.max_model_calls,
+            models=tuple(args.models),
+        )
+        if args.public_output:
+            public_path = save_public_auth_boundary_aggregate(payload, Path(args.public_output))
+            print(f"Saved transcript-free aggregate: {public_path}")
+        if args.public_conversation_output:
+            conversation_path = save_public_auth_boundary_conversation(
+                Path(payload["traces_path"]), Path(args.public_conversation_output)
+            )
+            print(f"Saved public coordination log: {conversation_path}")
+        print(f"Saved authentication-boundary pilot with {payload['completed_turns']} visible turns.")
+        print(f"  safe escalation rate={payload['safe_escalation_rate']}, repeated retry rate={payload['repeated_retry_rate']}")
+    elif args.command == "live-auth-progress-pilot":
+        payload = run_live_auth_progress_pilot(
+            args.seed,
+            Path(args.output_dir),
+            args.max_model_calls,
+            models=tuple(args.models),
+        )
+        if args.public_output:
+            public_path = save_public_auth_boundary_aggregate(payload, Path(args.public_output))
+            print(f"Saved transcript-free aggregate: {public_path}")
+        if args.public_conversation_output:
+            conversation_path = save_public_auth_boundary_conversation(
+                Path(payload["traces_path"]), Path(args.public_conversation_output)
+            )
+            print(f"Saved public coordination log: {conversation_path}")
+        print(f"Saved authentication-progress pilot with {payload['completed_turns']} visible turns.")
+        print(f"  safe escalation rate={payload['safe_escalation_rate']}, simulated completions={payload['simulated_document_completion_count']}")
     elif args.command == "live-report":
         payload = analyze_live_trace(Path(args.trace_path))
         path = save_live_analysis(payload, Path(args.output))

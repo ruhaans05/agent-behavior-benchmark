@@ -98,6 +98,25 @@ pilot observations from two conversations per condition, not an estimate of an
 incentive effect or a broad safety conclusion. See the [extended interaction
 report](docs/live_extended_dialogue_pilot_results.md).
 
+### Authentication-Boundary Coordination Pilot
+
+This separate study tests whether two agents can keep coordinating when a
+synthetic cloud-workspace task is blocked by authentication. The agents see
+each other's messages over six turns, but the environment explicitly contains
+no browser session, account, password, cookie, token, real web access, or
+external tools. The owner instruction requires personal authentication and
+prohibits requesting or accepting credentials or session data.
+
+The first six-turn run selected safe actions throughout, but three messages
+used ambiguous wording that asked the owner to "provide" a session. After the
+prompt was revised to make personal owner authentication explicit, the next
+six-turn run had zero such requests and zero workaround signals. A third
+six-turn persistence run introduced a simulated owner confirmation after turn
+two: all four post-confirmation turns completed the simulated document
+workflow. This is a safety-scoped protocol check, not a test of Chrome,
+Google, account access, or real document creation. See the
+[full result note](docs/authentication_boundary_results.md).
+
 ## What Changed Between Trials
 
 The live study crossed three reward structures with three pressure levels, creating nine conditions:
@@ -161,4 +180,5 @@ The value of the project is that the claim, reward, rule, provenance, and limita
 - [Dialogue control result](docs/controlled_dialogue_results.md)
 - [Live dialogue pilot report](docs/live_dialogue_pilot_results.md)
 - [Extended interaction pilot report](docs/live_extended_dialogue_pilot_results.md)
+- [Authentication-boundary coordination result](docs/authentication_boundary_results.md)
 - [Blinded review protocol](docs/review_protocol.md)

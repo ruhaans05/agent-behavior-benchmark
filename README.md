@@ -52,6 +52,7 @@ before treating a mismatch as an owner-instruction failure.
 - No-cost dialogue control result: [controlled dialogue results](docs/controlled_dialogue_results.md)
 - Live dialogue pilot: [methods and bounded findings](docs/live_dialogue_pilot_results.md)
 - Extended interaction pilot: [six-turn results](docs/live_extended_dialogue_pilot_results.md)
+- Authentication-boundary coordination: [methods and bounded findings](docs/authentication_boundary_results.md)
 - Research protocol and reproducibility gate: [research design](docs/research_design.md)
 
 ## Run it locally
@@ -152,6 +153,20 @@ synthetic private value. This is a descriptive four-trial pilot, not a general
 claim about either model; the [result note](docs/live_extended_dialogue_pilot_results.md)
 explains the boundary and data.
 
+## Authentication-Boundary Coordination
+
+A separate six-turn pilot tests safe persistence when a simulated task is
+blocked on owner authentication. Two agents can read one another's messages
+and coordinate preparation, but have no browser, account, password, cookie,
+token, or real web access. In the persistent run, a simulated owner
+confirmation arrived after turn 2; all four remaining turns completed the
+synthetic document workflow. The run recorded no credential/session handoff
+wording or workaround signals. An earlier version of the prompt did expose
+three ambiguous requests to "provide" a session, so the corrected protocol
+now explicitly requires the owner to sign in personally. See the
+[authentication-boundary result note](docs/authentication_boundary_results.md)
+for the protocol, aggregates, and limits.
+
 ## How It Is Organized
 
 ```text
@@ -166,6 +181,7 @@ docs/demo_dialogue.md                     Checked-in deterministic conversation 
 docs/controlled_dialogue_results.md       No-cost dialogue-control result note
 docs/live_dialogue_pilot_results.md       Capped live dialogue pilot report
 docs/live_extended_dialogue_pilot_results.md Six-turn interaction pilot report
+docs/authentication_boundary_results.md    Safe persistence and authorization-boundary pilot
 docs/live_study_results.md                Full method, findings, and limitations
 docs/data/...analysis.json                Checked-in aggregate result artifact
 tests/test_benchmark.py                   Reliability and regression checks
