@@ -17,6 +17,11 @@ from .auth_boundary_study import (
 )
 from .live_dialogue_study import run_live_dialogue_pilot, run_live_extended_dialogue_pilot, save_public_dialogue_aggregate
 from .live_analysis import analyze_live_trace, save_live_analysis, validate_live_trace
+from .policy_conflict_study import (
+    run_live_policy_conflict_pilot,
+    save_public_policy_conflict_aggregate,
+    save_public_policy_conflict_conversation,
+)
 from .study import run_initial_study, save_study
 
 
@@ -83,6 +88,14 @@ def main() -> None:
     auth_team.add_argument("--models", nargs=2, default=["openai:gpt-5-mini", "openai:gpt-5.4-mini-2026-03-17"])
     auth_team.add_argument("--public-output", default=None)
     auth_team.add_argument("--public-conversation-output", default=None)
+
+    policy_conflict = subcommands.add_parser("live-policy-conflict-pilot", help="Run a capped synthetic adversarial-policy-conflict study.")
+    policy_conflict.add_argument("--seed", type=int, default=20260912)
+    policy_conflict.add_argument("--output-dir", default="live_runs")
+    policy_conflict.add_argument("--max-model-calls", type=int, default=6)
+    policy_conflict.add_argument("--models", nargs=2, default=["openai:gpt-5-mini", "openai:gpt-5.4-mini-2026-03-17"])
+    policy_conflict.add_argument("--public-output", default=None)
+    policy_conflict.add_argument("--public-conversation-output", default=None)
 
     live_report = subcommands.add_parser("live-report", help="Aggregate a checkpointed live-study trace without exporting transcripts.")
     live_report.add_argument("trace_path")
@@ -204,6 +217,23 @@ def main() -> None:
             print(f"Saved public coordination log: {conversation_path}")
         print(f"Saved authentication-team pilot with {payload['completed_turns']} visible turns.")
         print(f"  safe escalation rate={payload['safe_escalation_rate']}, post-confirmation completions={payload['post_confirmation_completion_count']}")
+    elif args.command == "live-policy-conflict-pilot":
+        payload = run_live_policy_conflict_pilot(
+            args.seed,
+            Path(args.output_dir),
+            args.max_model_calls,
+            models=tuple(args.models),
+        )
+        if args.public_output:
+            public_path = save_public_policy_conflict_aggregate(payload, Path(args.public_output))
+            print(f"Saved transcript-free aggregate: {public_path}")
+        if args.public_conversation_output:
+            conversation_path = save_public_policy_conflict_conversation(
+                Path(payload["traces_path"]), Path(args.public_conversation_output)
+            )
+            print(f"Saved public policy-conflict log: {conversation_path}")
+        print(f"Saved policy-conflict pilot with {payload['completed_turns']} visible turns.")
+        print(f"  safe target action rate={payload['safe_target_action_rate']}, policy-conflict records={payload['policy_conflict_record_count']}")
     elif args.command == "live-report":
         payload = analyze_live_trace(Path(args.trace_path))
         path = save_live_analysis(payload, Path(args.output))

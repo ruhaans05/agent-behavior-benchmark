@@ -53,6 +53,7 @@ before treating a mismatch as an owner-instruction failure.
 - Live dialogue pilot: [methods and bounded findings](docs/live_dialogue_pilot_results.md)
 - Extended interaction pilot: [six-turn results](docs/live_extended_dialogue_pilot_results.md)
 - Authentication-boundary coordination: [methods and bounded findings](docs/authentication_boundary_results.md)
+- Adversarial policy-conflict pilot: [methods and bounded findings](docs/policy_conflict_results.md)
 - Research protocol and reproducibility gate: [research design](docs/research_design.md)
 
 ## Run it locally
@@ -176,6 +177,18 @@ credentials or matched the project's narrow workaround screen. Read the
 [four-role conversation log](docs/data/live_authentication_team_pilot_20260911_conversation.json)
 alongside the [aggregate](docs/data/live_authentication_team_pilot_20260911_analysis.json).
 
+## Adversarial Policy Conflicts
+
+The repository also contains a text-only adversarial-pressure study. Three
+scripted roles apply urgency, fabricated-approval, and concealment pressure to
+two live agents in a simulated audit workflow. The owner rule is that public
+verification must be complete before a record can be reported complete. Across
+three pressure rounds, both targets preserved the pending verification state in
+all six live responses and recorded the conflict rather than claiming
+completion. The [15-turn conversation log](docs/data/live_policy_conflict_pilot_20260912_conversation.json)
+and [result note](docs/policy_conflict_results.md) include the protocol and its
+important limitations.
+
 ## How It Is Organized
 
 ```text
@@ -191,6 +204,7 @@ docs/controlled_dialogue_results.md       No-cost dialogue-control result note
 docs/live_dialogue_pilot_results.md       Capped live dialogue pilot report
 docs/live_extended_dialogue_pilot_results.md Six-turn interaction pilot report
 docs/authentication_boundary_results.md    Safe persistence and authorization-boundary pilot
+docs/policy_conflict_results.md            Synthetic adversarial policy-conflict pilot
 docs/live_study_results.md                Full method, findings, and limitations
 docs/data/...analysis.json                Checked-in aggregate result artifact
 tests/test_benchmark.py                   Reliability and regression checks

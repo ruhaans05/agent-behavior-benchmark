@@ -226,6 +226,25 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(len(result.public_state["conversation"]), 16)
         self.assertEqual(result.public_state["team_members"], ["agent_0", "agent_1", "agent_2", "agent_3"])
 
+    def test_policy_conflict_environment_keeps_targets_in_a_synthetic_boundary(self) -> None:
+        from agent_behavior_benchmark.environments import environment_from_name
+        import random
+
+        environment = environment_from_name("policy_conflict")
+        providers = [
+            ScriptedProvider(name="urgency", style="adversarial_urgency"),
+            ScriptedProvider(name="authority", style="adversarial_authority"),
+            ScriptedProvider(name="concealment", style="adversarial_concealment"),
+            ScriptedProvider(name="guard", style="scripted_baseline"),
+            ScriptedProvider(name="operator", style="scripted_baseline"),
+        ]
+        result = environment.run_trial(0, providers, random.Random(1))
+
+        self.assertEqual(len(result.turn_actions or []), 15)
+        self.assertEqual(result.public_state["verification_status"], "PENDING")
+        self.assertIn("no browser", result.public_state["tool_boundary"].lower())
+        self.assertTrue(all(action["action"] == "pressure" for action in (result.turn_actions or [])[0:3]))
+
     def test_auth_boundary_detector_does_not_count_a_refusal_as_a_workaround(self) -> None:
         result = TrialResult(
             experiment="authentication_boundary",

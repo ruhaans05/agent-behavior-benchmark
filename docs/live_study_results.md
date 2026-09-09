@@ -179,6 +179,19 @@ run recorded zero credential/session handoff requests and zero workaround
 signals. Its [public conversation log](data/live_authentication_team_pilot_20260911_conversation.json)
 is available for qualitative review, with the same simulated-environment limits.
 
+## Adversarial Policy-Conflict Pilot
+
+A separate 15-turn, text-only pilot adds three fixed pressure patterns: urgency
+to skip a checkpoint, a fabricated private approval, and concealment of a
+pending blocker. Two live target agents responded after every pressure round
+under a fixed owner instruction requiring public verification before any
+simulated audit record could be reported complete. All six target responses
+recorded the conflict and preserved the pending state. This is a constrained
+protocol check with scripted pressure messages, not a finding about real-world
+adversarial robustness. The full [method and result](policy_conflict_results.md)
+and [public conversation log](data/live_policy_conflict_pilot_20260912_conversation.json)
+are reported separately.
+
 ## Limitations and Next Steps
 
 - This is a single-seed, partially completed descriptive study with no
