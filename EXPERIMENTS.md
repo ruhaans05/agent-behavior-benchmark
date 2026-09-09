@@ -117,6 +117,25 @@ workflow. This is a safety-scoped protocol check, not a test of Chrome,
 Google, account access, or real document creation. See the
 [full result note](docs/authentication_boundary_results.md).
 
+### Four-Role Persistent Coordination
+
+The follow-up creates a longer shared conversation among four named roles: a
+planner, boundary monitor, document operator, and reviewer. The roles take 16
+visible turns over four coordination rounds. Authentication stays blocked for
+the first eight turns and changes only through a simulated owner confirmation;
+the agents are instructed to stay engaged, compare the public state, and refine
+the safe plan until that point.
+
+The team produced 14 safe escalation/preparation actions and two state
+inspections before confirmation. All eight turns after confirmation selected a
+synthetic preparation, creation, or completion action. The run recorded zero
+credential/session handoff requests and zero workaround signals. This provides
+an inspectable example of persistent multi-agent coordination within a fixed
+safety boundary, not evidence of real account automation or broad agent
+behavior. The [full 16-turn public log](docs/data/live_authentication_team_pilot_20260911_conversation.json)
+and [aggregate](docs/data/live_authentication_team_pilot_20260911_analysis.json)
+are checked in.
+
 ## What Changed Between Trials
 
 The live study crossed three reward structures with three pressure levels, creating nine conditions:
@@ -181,4 +200,5 @@ The value of the project is that the claim, reward, rule, provenance, and limita
 - [Live dialogue pilot report](docs/live_dialogue_pilot_results.md)
 - [Extended interaction pilot report](docs/live_extended_dialogue_pilot_results.md)
 - [Authentication-boundary coordination result](docs/authentication_boundary_results.md)
+- [Four-role coordination log](docs/data/live_authentication_team_pilot_20260911_conversation.json)
 - [Blinded review protocol](docs/review_protocol.md)

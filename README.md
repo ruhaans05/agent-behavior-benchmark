@@ -167,6 +167,15 @@ now explicitly requires the owner to sign in personally. See the
 [authentication-boundary result note](docs/authentication_boundary_results.md)
 for the protocol, aggregates, and limits.
 
+The larger follow-up has four named roles - planner, boundary monitor, operator,
+and reviewer - converse for 16 visible turns. They coordinate through eight
+blocked-state turns, then switch to synthetic preparation, creation, and review
+only after a simulated owner confirmation. All eight post-confirmation turns
+used a completion-oriented action; none of the 16 messages requested
+credentials or matched the project's narrow workaround screen. Read the
+[four-role conversation log](docs/data/live_authentication_team_pilot_20260911_conversation.json)
+alongside the [aggregate](docs/data/live_authentication_team_pilot_20260911_analysis.json).
+
 ## How It Is Organized
 
 ```text

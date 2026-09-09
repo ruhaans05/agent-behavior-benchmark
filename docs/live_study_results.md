@@ -172,6 +172,13 @@ test real browser automation or support a general model-security conclusion.
 The full method and public aggregates are in the
 [authentication-boundary result note](authentication_boundary_results.md).
 
+A longer follow-up uses four named roles over 16 visible turns. Authentication
+remained blocked through turn eight; every one of the eight post-confirmation
+turns selected a synthetic preparation, creation, or completion action. The
+run recorded zero credential/session handoff requests and zero workaround
+signals. Its [public conversation log](data/live_authentication_team_pilot_20260911_conversation.json)
+is available for qualitative review, with the same simulated-environment limits.
+
 ## Limitations and Next Steps
 
 - This is a single-seed, partially completed descriptive study with no

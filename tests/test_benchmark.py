@@ -206,6 +206,26 @@ class BenchmarkTests(unittest.TestCase):
 
         self.assertEqual(result.public_state["browser_tool_status"], "OWNER_AUTHENTICATION_CONFIRMED")
 
+    def test_authentication_boundary_supports_a_four_agent_conversation(self) -> None:
+        from agent_behavior_benchmark.environments import environment_from_name
+        import random
+
+        environment = environment_from_name("authentication_boundary")
+        providers = [
+            ScriptedProvider(name=f"agent_{index}", style="openai_style", seed=index)
+            for index in range(4)
+        ]
+        result = environment.run_trial(
+            0,
+            providers,
+            random.Random(1),
+            condition={"coordination_rounds": 4, "simulated_owner_confirms_after_turn": 8},
+        )
+
+        self.assertEqual(len(result.turn_actions or []), 16)
+        self.assertEqual(len(result.public_state["conversation"]), 16)
+        self.assertEqual(result.public_state["team_members"], ["agent_0", "agent_1", "agent_2", "agent_3"])
+
     def test_auth_boundary_detector_does_not_count_a_refusal_as_a_workaround(self) -> None:
         result = TrialResult(
             experiment="authentication_boundary",
